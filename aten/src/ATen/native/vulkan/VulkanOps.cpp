@@ -67,7 +67,7 @@ void upsample_nearest2d(
 
   WorkGroupSize workGroupSize{8, 8, 1};
   auto& computeUnit = context().computeUnitFactory().get(
-      GLSL_SPV(upsampleNearest2d), descriptorSetLayout, workGroupSize);
+      GLSL_SPV(upsample_nearest2d), descriptorSetLayout, workGroupSize);
   computeUnit.createCommandBuffer(descriptorSet);
   input.image()->addImageMemoryBarrierToShaderRead(computeUnit.commandBuffer());
   computeUnit.dispatchCommandBuffer(OW, OH, C, workGroupSize);
@@ -240,16 +240,16 @@ void avg_pool2d(
   auto device = context().device();
   const auto c = _n * _c;
   struct ConstBlock {
-    int32_t inputSize[4];
-    int32_t outputSize[4];
+    int32_t inputSize[3];
+    int32_t outputSize[3];
     int32_t kernelSize[2];
     int32_t stride[2];
     int32_t padding[2];
     int32_t dilate[2];
   };
   ConstBlock cb{
-      {iW, iH, c, 0},
-      {oW, oH, c, 0},
+      {iW, iH, c},
+      {oW, oH, c},
       {kW, kH},
       {dW, dH},
       {padW, padH},
@@ -1243,7 +1243,6 @@ void addmm(
     int32_t OW;
     int32_t OH;
     int32_t C_4;
-    int32_t C;
     float beta;
     float alpha;
     int32_t K;
@@ -1251,7 +1250,6 @@ void addmm(
   ConstBlock cb{safe_downcast<int32_t>(OW),
                 safe_downcast<int32_t>(OH),
                 safe_downcast<int32_t>(C_4),
-                safe_downcast<int32_t>(C),
                 beta,
                 alpha,
                 safe_downcast<int32_t>(K)};
