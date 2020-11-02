@@ -101,9 +101,14 @@ struct ModuleInstanceInfo {
  *  [ham, source_range4]  --
  */
 using InlinedCallStackPtr = c10::intrusive_ptr<InlinedCallStack>;
+<<<<<<< HEAD
+using InlinedCallStackEntry =
+    std::tuple<Function*, SourceRange, c10::optional<ModuleInstanceInfo>>;
+=======
 using InlinedCallStackEntry = std::pair<Function*, SourceRange>;
 using InlinedCallStackWithModuleInfo =
 std::tuple<Function*, SourceRange, c10::optional<ModuleInstanceInfo>>;
+>>>>>>> 84bec65c5b... [Pytorch][Annotation] Update inlined callstack with module instance info
 
 struct TORCH_API InlinedCallStack : public c10::intrusive_ptr_target {
  private:
@@ -112,8 +117,15 @@ struct TORCH_API InlinedCallStack : public c10::intrusive_ptr_target {
   SourceRange source_range_;
   InlinedCallStackPtr intrusive_from_this();
   c10::optional<ModuleInstanceInfo> module_instance_info_;
+<<<<<<< HEAD
+  std::string modulePath_;
+  bool initialized_ = true;
+=======
+>>>>>>> 84bec65c5b... [Pytorch][Annotation] Update inlined callstack with module instance info
 
  public:
+  InlinedCallStack();
+
   // Constructor for a leaf callstack node.
   InlinedCallStack(Function* fn, SourceRange source_range);
 
@@ -140,6 +152,8 @@ struct TORCH_API InlinedCallStack : public c10::intrusive_ptr_target {
 
   // Return callstack as a vector of [Function, SourceRange] pairs.
   std::vector<InlinedCallStackEntry> vec();
+  void setModulePath(std::string path);
+  std::string getModulePath();
 };
 
 } // namespace jit
